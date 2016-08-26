@@ -31,6 +31,9 @@ public class WebRTCView extends GLSurfaceView {
     private VideoRenderer mVideoRenderer;
     private MediaStream mMediaStream;
 
+    private RendererCommon.ScalingType props_objectFit = DEFAULT_SCALING_TYPE;
+    private Boolean props_mirror = false;
+
     public WebRTCView(Context context) {
         super(context);
 
@@ -60,6 +63,27 @@ public class WebRTCView extends GLSurfaceView {
         mediaStream.videoTracks.get(0).addRenderer(mVideoRenderer);
 
         RendererCommon.ScalingType scalingType = DEFAULT_SCALING_TYPE;
-        VideoRendererGui.update(localRender, 0, 0, 100, 100, scalingType, false);
+        update();
+    }
+
+    public void setMirror(Boolean mirror) {
+        props_mirror = (mirror == true);
+        update();
+    }
+
+    public void setObjectFit(String objectFit) {
+        switch (objectFit) {
+            case "cover":
+                props_objectFit = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
+                break;
+            default:
+                props_objectFit = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
+                break;
+        }
+        update();
+    }
+
+    private void update() {
+        VideoRendererGui.update(localRender, 0, 0, 100, 100, props_objectFit, props_mirror);
     }
 }
