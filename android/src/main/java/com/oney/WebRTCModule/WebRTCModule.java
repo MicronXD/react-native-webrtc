@@ -362,41 +362,45 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
 
         MediaConstraints mediaConstraints = new MediaConstraints();
 
-        if (constraintsMap.getType("mandatory") == ReadableType.Map) {
-            ReadableMap mandatory = constraintsMap.getMap("mandatory");
-            ReadableMapKeySetIterator keyIterator = mandatory.keySetIterator();
+        if(constraintsMap.hasKey("mandatory")) {
+            if (constraintsMap.getType("mandatory") == ReadableType.Map) {
+                ReadableMap mandatory = constraintsMap.getMap("mandatory");
+                ReadableMapKeySetIterator keyIterator = mandatory.keySetIterator();
 
-            while (keyIterator.hasNextKey()) {
-                String key = keyIterator.nextKey();
-                String value = ReactBridgeUtil.getMapStrValue(mandatory, key);
+                while (keyIterator.hasNextKey()) {
+                    String key = keyIterator.nextKey();
+                    String value = ReactBridgeUtil.getMapStrValue(mandatory, key);
 
-                mediaConstraints.mandatory.add(
-                    new MediaConstraints.KeyValuePair(key, value));
+                    mediaConstraints.mandatory.add(
+                            new MediaConstraints.KeyValuePair(key, value));
+                }
+            } else {
+                Log.d(TAG, "mandatory constraints are not a map");
             }
-        } else {
-            Log.d(TAG, "mandatory constraints are not a map");
         }
 
-        if (constraintsMap.getType("optional") == ReadableType.Array) {
-            ReadableArray options = constraintsMap.getArray("optional");
+        if(constraintsMap.hasKey("optional")) {
+            if (constraintsMap.getType("optional") == ReadableType.Array) {
+                ReadableArray options = constraintsMap.getArray("optional");
 
-            for (int i = 0; i < options.size(); i++) {
-                if (options.getType(i) == ReadableType.Map) {
-                    ReadableMap option = options.getMap(i);
-                    ReadableMapKeySetIterator keyIterator
-                        = option.keySetIterator();
-                    String key = keyIterator.nextKey();
+                for (int i = 0; i < options.size(); i++) {
+                    if (options.getType(i) == ReadableType.Map) {
+                        ReadableMap option = options.getMap(i);
+                        ReadableMapKeySetIterator keyIterator
+                                = option.keySetIterator();
+                        String key = keyIterator.nextKey();
 
-                    if (key != null && !"sourceId".equals(key)) {
-                        mediaConstraints.optional.add(
-                            new MediaConstraints.KeyValuePair(
-                                key,
-                                ReactBridgeUtil.getMapStrValue(option, key)));
+                        if (key != null && !"sourceId".equals(key)) {
+                            mediaConstraints.optional.add(
+                                    new MediaConstraints.KeyValuePair(
+                                            key,
+                                            ReactBridgeUtil.getMapStrValue(option, key)));
+                        }
                     }
                 }
+            } else {
+                Log.d(TAG, "optional constraints are not a map");
             }
-        } else {
-            Log.d(TAG, "optional constraints are not a map");
         }
 
         return mediaConstraints;
@@ -452,9 +456,9 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
                     ReadableMap useVideoMap = constraints.getMap("video");
                     videoConstraints = parseConstraints(useVideoMap);
                     sourceId = getSourceIdConstraint(useVideoMap);
-                    facingMode
-                        = ReactBridgeUtil.getMapStrValue(
-                                useVideoMap, "facingMode");
+                    if (useVideoMap.hasKey("facingMode")) {
+                        facingMode = ReactBridgeUtil.getMapStrValue(useVideoMap, "facingMode");
+                    }
                     break;
             }
 
