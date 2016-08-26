@@ -20,6 +20,7 @@ const RTCView = {
      */
     objectFit: PropTypes.oneOf(['contain', 'cover']),
     streamURL: PropTypes.string,
+    mirror: PropTypes.bool,
   },
 };
 
